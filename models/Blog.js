@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const blogSchema = new mongoose.Schema({
   title: String,
   content: String,
-  image: String, // Make sure the image path is stored correctly
+  images: [String],  
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "admin"
+}
 });
 
 const Blog = mongoose.model('Blog', blogSchema);

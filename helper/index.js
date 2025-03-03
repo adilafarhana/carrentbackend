@@ -1,35 +1,45 @@
-const bcrypt = require("bcrypt")
-const json = require("jsonwebtoken")
-const multer = require("multer")
+// helper/index.js
+const bcrypt = require("bcrypt");
+const jsonwebtoken = require("jsonwebtoken");
+const multer = require("multer");
 
-const isMatch = await bcrypt.compare(password, admin.password);
-if (!isMatch) {
-    return res.status(401).json({ status: "Error", message: "Incorrect password" });
+const comparePasswords = async (inputPassword, storedPassword) => {
+  const isMatch = await bcrypt.compare(inputPassword, storedPassword);
+  return isMatch;
+};
+
+const generateHashedPassword = async (password) => {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
+};
+
+const generateToken = (data) => {
+  const token = jsonwebtoken.sign(data, "task-app", { expiresIn: "1d" });
+  return token;
+};
+const verifytoken = async(token) => {
+  const decoded = await  jsonwebtoken.verify(token,"task-app",);
+  return decoded
+
 }
 
-const token = jsonwebtoken.sign({ email: admin.email }, "task-app", { expiresIn: "1d" });
-
-res.json({ status: "Success", userid: admin._id, token });
-
-
-let hashedPassword = await generateHashedPassword(input.password);
-input.password = hashedPassword;
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname);
-    },
-  });
-  
-  const upload = multer({ storage });
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage }).array("images", 5);
+
 
 module.exports = {
-    isMatch,
-    token,
-    hashedPassword,
-    storage,
-    upload
-}
+  comparePasswords,
+  generateHashedPassword,
+  generateToken,
+  upload,
+  verifytoken
+};

@@ -1,103 +1,98 @@
-const Car = require('../models/car'); // Assuming you have a Car model
-const multer = require("multer");
+const Car = require('../models/car');
+const upload = require('../helper/index');
 
-// Set up multer storage engine using arrow functions
-
-const upload = multer({ storage });
-
-// Arrow function for uploading car details
-// exports.uploadCarDetails = [
-//   upload.array('images', 10),
-//   async (req, res) => {
-//     try {
-//       const { brand, model, price, description, type } = req.body;
-//       const imagePaths = req.files.map((file) => file.path);
-
-//       const newCar = new Car({
-//         brand,
-//         model,
-//         price,
-//         description,
-//         type,
-//         images: imagePaths,
-//       });
-
-//       await newCar.save();
-
-//       res.status(200).json({ message: 'Car details uploaded successfully' });
-//     } catch (error) {
-//       console.error('Error saving car details:', error);
-//       res.status(500).json({ message: 'Failed to upload car details' });
-//     }
-//   },
-// ];
-
-app.post("/upload", upload.array('images', 10), async (req, res) => {
+const uploadcar = async (req, res) => {
   try {
-    const { brand, model, price, description, type } = req.body;
-    const imagePaths = req.files.map((file) => file.path);
+    console.log("Request received:", req.body);
+    console.log("Uploaded files:", req.files);
 
-    const newCar = new carModel({
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
+
+    const { brand, model, price, description, type, rentalPricePerHour } = req.body;
+    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+
+    const newCar = new Car({
       brand,
       model,
       price,
       description,
       type,
       images: imagePaths,
+      rentalPricePerHour: type === "Rent" ? rentalPricePerHour : undefined
     });
 
     await newCar.save();
-
-    res.status(200).json({ message: 'Car details uploaded successfully' });
+    res.status(201).json({ message: "Car uploaded successfully", car: newCar });
   } catch (error) {
-    console.error('Error saving car details:', error);
-    res.status(500).json({ message: 'Failed to upload car details' });
+    console.error("Error uploading car:", error);
+    res.status(500).json({ message: "Error uploading car", error });
   }
-});
+};
 
+const deletecar = async (req, res) => {
+  const { carId } = req.params;
+  console.log("Deleting car with ID:", carId);
 
-const multer = require('multer');
-const carModel = require("./models/car");
-
-// Set up multer storage engine
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  },
-});
-
-// const upload = multer({ storage });
-
-const uploadcar= async (req, res) => {
   try {
-    const { brand, model, price, description, type } = req.body;
-    const imagePaths = req.files.map((file) => file.path);
+    const car = await Car.findByIdAndDelete(carId);
 
-    const newCar = new carModel({
-      brand,
-      model,
-      price,
-      description,
-      type,
-      images: imagePaths,
-    });
+    if (!car) {
+      return res.status(404).json({ message: "Car not found" });
+    }
 
-    await newCar.save();
-
-    res.status(200).json({ message: 'Car details uploaded successfully' });
+    res.status(200).json({ message: "Car deleted successfully" });
   } catch (error) {
-    console.error('Error saving car details:', error);
-    res.status(500).json({ message: 'Failed to upload car details' });
+    console.error("Error deleting car:", error);
+    res.status(500).json({ message: "Failed to delete car" });
+  }
+};
+
+const getcars = async (req, res) => {
+  try {
+
+    const cars = await Car.find();
+    res.status(200).json(cars);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch cars" });
+  }
+};
+
+
+const carDetails = async (req, res) => {
+  try {
+    const { id } = req.body
+
+    const cars = await Car.findOne({_id:id});
+    res.status(200).json(cars);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch cars" });
+  }
+};
+
+
+
+const cars = async (req, res) => {
+  try {
+    console.log(req.body)
+    const cars = await Car.find({ type: req.body.type });
+    res.json(cars);
+  } catch (error)
+   {    console.error("Error car book:", error);
+
+    res.status(500).json({ message: "Error fetching cars", error });
   }
 }
 
 
-module.exports={
-    uploadcar
 
-}
-
-
+module.exports = {
+  uploadcar,
+  deletecar,
+  getcars,
+  cars,
+  carDetails
+};
