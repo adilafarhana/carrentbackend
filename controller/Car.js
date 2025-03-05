@@ -10,8 +10,10 @@ const uploadcar = async (req, res) => {
       return res.status(400).json({ message: "No files uploaded" });
     }
 
-    const { brand, model, price, description, type, rentalPricePerHour } = req.body;
+    const { brand, model, price, description, type, rentalPricePerHour,specialOffers, discountPercentage } = req.body;
     const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+    const discountedPrice = discountPercentage ? price - (price * (discountPercentage / 100)) : price;
+
 
     const newCar = new Car({
       brand,
@@ -20,7 +22,9 @@ const uploadcar = async (req, res) => {
       description,
       type,
       images: imagePaths,
-      rentalPricePerHour: type === "Rent" ? rentalPricePerHour : undefined
+      rentalPricePerHour: type === "Rent" ? rentalPricePerHour : undefined,
+      specialOffers: "",
+      discountPercentage: discountPercentage || 0,
     });
 
     await newCar.save();
@@ -30,6 +34,9 @@ const uploadcar = async (req, res) => {
     res.status(500).json({ message: "Error uploading car", error });
   }
 };
+
+
+
 
 const deletecar = async (req, res) => {
   const { carId } = req.params;

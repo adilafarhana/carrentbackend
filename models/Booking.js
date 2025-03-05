@@ -9,7 +9,7 @@ const bookingSchema = new mongoose.Schema({
     time: { type: String, required: true },
     duration: { type: Number, },
     totalPrice: { type: Number, },
-    status: { type: String, enum: ["Pending", "Confirmed", "Cancelled"], default: "Pending" },
+    status: { type: String, enum: ["Pending", "Confirmed", "Delivered", "Cancelled"], default: "Pending" },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "admin"

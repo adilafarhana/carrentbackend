@@ -7,6 +7,7 @@ const authMiddleware = require('../middleware/auth')
 const blogcontroller=require("../controller/Blog")
 const bookingcontroller=require("../controller/Bookingcar")
 const usedcarpurchasecontroller=require("../controller/Bookingused")
+const reviewusercontroller=require("../controller/Reviews")
 
 
 
@@ -16,7 +17,8 @@ router.post("/login", authcontroller.login);
 router.post("/signup", authcontroller.signup);
 
 
-router.delete("/deletecar/:carId", carcontroller.deletecar); 
+router.get("/deletecar", authMiddleware.adminRequird, carcontroller.deletecar); 
+
 router.get("/getcars", authMiddleware.adminRequird, carcontroller.getcars);
 router.post("/uploadcar", upload, authMiddleware.adminRequird, carcontroller.uploadcar); 
 router.post("/cars", carcontroller.cars);
@@ -42,7 +44,11 @@ router.get("/getPurchases", authMiddleware.adminRequird, usedcarpurchasecontroll
 router.post("/carDetails", authMiddleware.userRequird, carcontroller.carDetails);
 
 
-router.get("/Bookingdetails", authMiddleware.userRequird, bookingcontroller.Bookingdetails);
+router.post("/Bookingdetails", authMiddleware.userRequird, bookingcontroller.Bookingdetails);
+router.post("/addReview", authMiddleware.userRequird, reviewusercontroller.addReview);
+router.post("/viewReviews", authMiddleware.userRequird, reviewusercontroller.viewReviews);
+
+
 
 
 

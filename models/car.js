@@ -8,6 +8,9 @@ const carSchema = new mongoose.Schema({
   description: { type: String, required: true },
   type: { type: String, enum: ["Used", "Rent"], required: true }, 
   images: [String], // Array of image URLs
+  specialOffers: { type: String, default: "" }, // Special offer description
+  discountPercentage: { type: Number, default: 0 }, // Discount in %
+
 });
 
 const Car = mongoose.model("Car", carSchema);
