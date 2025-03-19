@@ -2,7 +2,6 @@ const Car = require('../models/Blog');
 const upload = require('../helper/index'); 
 const Blog = require('../models/Blog');
 
-
 const uploadblog = async (req, res) => {
   try {
     console.log("Request received:", req.body);
@@ -31,7 +30,6 @@ const uploadblog = async (req, res) => {
     res.status(500).json({ message: "Error uploading blog", error });
   }
 };
-
 const deleteblog= async (req, res) => {
   try {
     const { id } = req.params;
