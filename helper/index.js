@@ -33,6 +33,24 @@ const storage = multer.diskStorage({
   },
 });
 
+function calculateLatePenalty(lateHours, baseAmount) {
+  if (lateHours <= 0) return 0;
+  const penalty = baseAmount * PENALTY_RATE_PER_HOUR * lateHours;
+  const minimumPenalty = baseAmount * MINIMUM_PENALTY_PERCENTAGE;
+  return Math.max(penalty, minimumPenalty);
+}
+
+// Helper function to calculate damage penalty
+function calculateDamagePenalty(condition, baseAmount) {
+  const damageRates = {
+    "Excellent": 0,
+    "Good": 0,
+    "Fair": baseAmount * 0.05,
+    "Poor": baseAmount * 0.1,
+    "Damaged": baseAmount * 0.2
+  };
+  return damageRates[condition] || 0;
+}
 
 
 
@@ -44,5 +62,6 @@ module.exports = {
   generateHashedPassword,
   generateToken,
   upload,
-  verifytoken
+  verifytoken,
+  calculateLatePenalty,
 };

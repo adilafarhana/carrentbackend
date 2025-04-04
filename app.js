@@ -7,6 +7,10 @@ const jsonwebtoken = require("jsonwebtoken");
 const adminModel = require("./models/admin");
 const Car=require("./models/car")
 const indexroute=require('./routes/index')
+const cron = require("node-cron");
+const bookingRoutes = require('./routes/index'); // Add this line
+
+
 require('./config/db')
 const app = express(); 
 
@@ -16,7 +20,17 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 
+const { checkOverdueBookings } = require("./controller/Bookingcar");
 
+cron.schedule("0 * * * *", async () => {
+  console.log("Running overdue bookings check...");
+  try {
+    const overdue = await checkOverdueBookings();
+    console.log(`Found ${overdue.length} overdue bookings`);
+  } catch (error) {
+    console.error("Error in overdue check:", error);
+  }
+});
 
 
 

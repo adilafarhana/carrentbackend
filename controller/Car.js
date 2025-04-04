@@ -158,7 +158,25 @@ const deletenotification= async (req, res) => {
     res.status(500).json({ message: "Error clearing notifications" });
   }
 }
+const getCarById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid car ID format" });
+    }
+
+    const car = await Car.findById(id);
+    if (!car) {
+      return res.status(404).json({ message: "Car not found" });
+    }
+
+    res.status(200).json(car);
+  } catch (error) {
+    console.error("Error fetching car:", error);
+    res.status(500).json({ message: "Server error while fetching car details" });
+  }
+};
 
 
 module.exports = {
@@ -169,5 +187,6 @@ module.exports = {
   carDetails,
   updatestatus,
   getnotication,
-  deletenotification
+  deletenotification,
+  getCarById
 };

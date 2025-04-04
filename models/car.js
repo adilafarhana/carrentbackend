@@ -1,27 +1,29 @@
 const mongoose = require("mongoose");
 
-const carSchema = new mongoose.Schema({
+const CarSchema = new mongoose.Schema({
   brand: { type: String, required: true },
   model: { type: String, required: true },
-  price: { type: Number, required: true },
-  rentalPricePerHour: { type: Number, default: null },
-  rentalPricePerday: { type: Number, default: null },
-  rentalPricePerweak: { type: Number, default: null },
-  rentalPricePermonth: { type: Number, default: null },
-  description: { type: String, required: true },
-  type: { type: String, enum: ["Used", "Rent"], required: true },
-  images: [String], // Array of image URLs
-  specialOffers: { type: String, default: "" },
-  discountPercentage: { type: Number, default: 0 },
-  status: { type: String, enum: ["Available", "Not Available"], default: "Available" },
-  mileage: { type: Number }, // New field
-  fuelType: { type: String, enum: ["Petrol", "Diesel", "Electric", "Hybrid"] }, // New field
-  transmission: { type: String, enum: ["Manual", "Automatic"] }, // New field
+  type: { type: String, enum: ["Rent", "Used"], required: true },
+  status: { 
+    type: String, 
+    enum: ["Available", "Not Available", "Maintenance"],
+    default: "Available"
+  },
+  year: { type: Number, required: true },
+  color: { type: String, required: true },
+  mileage: { type: Number, required: true },
+  fuelType: { type: String, required: true },
+  transmission: { type: String, required: true },
   seatingCapacity: { type: Number, required: true },
-  year: { type: Number }, // New field
-  color: { type: String }, // New field
-});
+  rentalPricePerHour: { type: Number },
+  rentalPricePerday: { type: Number },
+  rentalPricePerweak: { type: Number },
+  rentalPricePermonth: { type: Number },
+  price: { type: Number }, // For used cars
+  description: { type: String },
+  images: [{ type: String }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+}, { timestamps: true });
 
-const Car = mongoose.model("Car", carSchema);
-
-module.exports = Car;
+module.exports = mongoose.model("Car", CarSchema);
